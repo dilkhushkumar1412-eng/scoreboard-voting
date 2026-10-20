@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#168ff0"><title>Personal Scoreboard Voting</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--blue:#168ff0;--red:#f44336;--bg:#10131a;--panel:#fff;--ink:#242832;--muted:#6d7480}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#eef1f6;color:var(--ink)}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;font-weight:750}
+.app{max-width:1100px;margin:auto;padding:14px}.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.brand{font-weight:900;font-size:1.1rem}.top-actions{display:flex;gap:7px;flex-wrap:wrap}
+.primary{background:#171a22;color:#fff}.light{background:#e8ebf1;color:#222}.danger{background:#ffe3e0;color:#a3261d}.small{padding:8px 10px;font-size:.9rem}
+.workspace{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px, .8fr);gap:14px;align-items:start}
+.board{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 12px 32px #10182816}
+.question{padding:16px 14px;text-align:center;background:#fff;font-weight:850;font-size:clamp(1rem,2.7vw,1.35rem);min-height:62px;display:grid;place-items:center}
+.sides{display:grid;grid-template-columns:1fr 1fr;min-height:480px}.side{padding:18px 12px;color:#fff;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;min-width:0}.side:first-child{background:var(--blue)}.side:last-child{background:var(--red)}
+.avatar{width:clamp(82px,14vw,150px);height:clamp(82px,14vw,150px);border-radius:50%;border:4px solid #ffffffbd;background:#ffffff2b;display:grid;place-items:center;overflow:hidden;font-size:3rem;font-weight:900;flex-shrink:0}.avatar img{width:100%;height:100%;object-fit:cover}
+.player-name{font-size:clamp(1.05rem,3vw,1.8rem);font-weight:900;overflow-wrap:anywhere;line-height:1.12}.votes{font-size:clamp(3.6rem,10vw,7.5rem);font-weight:1000;line-height:1;letter-spacing:-.06em;font-variant-numeric:tabular-nums}.votes-label{font-size:.8rem;font-weight:850;letter-spacing:.15em}.controls{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;width:100%;margin-top:auto}.add{background:#fff;color:#171a22;flex:1;min-width:70px}.mini{background:#ffffff30;color:#fff;border:1px solid #ffffff75;padding:9px 11px}.progress-wrap{padding:14px 16px;background:#fff}.progress-meta{display:flex;justify-content:space-between;gap:10px;font-weight:800;font-size:.9rem;margin-bottom:8px}.progress{height:12px;border-radius:100px;background:#e8ebf1;display:flex;overflow:hidden}.progress-blue{background:var(--blue);width:50%;transition:width .15s}.progress-red{background:var(--red);flex:1}
+.panel{background:#fff;border-radius:18px;padding:16px;box-shadow:0 8px 24px #1018280c}.panel h2{margin:0 0 12px;font-size:1.12rem}.field{display:grid;gap:6px;margin-bottom:12px}.field label{font-size:.86rem;font-weight:800}.field input,.field textarea,.field select{width:100%;padding:10px 11px;border:1px solid #d9dde5;border-radius:10px;background:#fff;color:#222;min-width:0}.field textarea{resize:vertical;min-height:70px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.color-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.color-row input{height:42px;padding:3px}.photo-actions{display:flex;gap:6px;flex-wrap:wrap}.photo-actions button{flex:1}.section{border-top:1px solid #edf0f4;padding-top:14px;margin-top:14px}.notice{font-size:.82rem;color:var(--muted);line-height:1.45}.saved-list{display:grid;gap:8px}.saved-item{border:1px solid #e2e5eb;border-radius:12px;padding:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}.saved-item strong{display:block;overflow-wrap:anywhere}.saved-item small{color:var(--muted)}.saved-actions{display:flex;gap:5px;flex-shrink:0}.saved-actions button{padding:7px 9px}.hidden{display:none!important}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#171a22;color:white;padding:11px 16px;border-radius:12px;box-shadow:0 8px 30px #0003;z-index:20;max-width:90vw;text-align:center}
+.fullscreen .app{max-width:none;padding:0}.fullscreen .top,.fullscreen .panel{display:none}.fullscreen .workspace{display:block}.fullscreen .board{border-radius:0;min-height:100vh;display:flex;flex-direction:column}.fullscreen .question{font-size:clamp(1.2rem,3vw,2rem);padding:20px}.fullscreen .sides{flex:1;min-height:0}.fullscreen .side{padding:clamp(12px,3vh,35px) 12px}.fullscreen .votes{font-size:clamp(4rem,17vw,13rem)}.fullscreen .avatar{width:clamp(75px,17vh,190px);height:clamp(75px,17vh,190px)}.fullscreen .player-name{font-size:clamp(1.1rem,3vw,2.4rem)}.fullscreen .controls{max-width:320px}.fullscreen .progress-wrap{padding:18px}
+@media(max-width:760px){.app{padding:9px}.workspace{grid-template-columns:1fr}.sides{min-height:430px}.panel{padding:14px}.top{align-items:flex-start}.brand{font-size:1rem}.top-actions button{padding:9px 10px}.fullscreen .sides{min-height:calc(100dvh - 150px)}.fullscreen .question{min-height:72px}}
+@media(max-width:380px){.sides{min-height:400px}.side{padding:13px 7px}.controls{gap:5px}.add{min-width:60px;padding:9px 6px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div><div class="brand">🏆 Personal Scoreboard</div><div class="notice">तुम्हारा निजी वोट-काउंटर</div></div><div class="top-actions"><button class="light" id="newBtn">＋ नया</button><button class="primary" id="fullBtn">⛶ फुल स्क्रीन</button></div></header>
+<div class="workspace">
+<main class="board" id="board">
+<div class="question" id="questionView">किस खिलाड़ी को सपोर्ट करते हो?</div>
+<div class="sides">
+<section class="side" id="side1"><div class="avatar" id="avatar1">🐸</div><div class="player-name" id="nameView1">PLAYER 1</div><div class="votes" id="score1">0</div><div class="votes-label">VOTES</div><div class="controls"><button class="add" data-add="1" data-n="1">＋1 वोट</button><button class="add" data-add="1" data-n="5">＋5</button><button class="add" data-add="1" data-n="10">＋10</button><button class="mini" data-sub="1">−1</button><button class="mini" data-undo="1">↶</button></div></section>
+<section class="side" id="side2"><div class="avatar" id="avatar2">🐮</div><div class="player-name" id="nameView2">PLAYER 2</div><div class="votes" id="score2">0</div><div class="votes-label">VOTES</div><div class="controls"><button class="add" data-add="2" data-n="1">＋1 वोट</button><button class="add" data-add="2" data-n="5">＋5</button><button class="add" data-add="2" data-n="10">＋10</button><button class="mini" data-sub="2">−1</button><button class="mini" data-undo="2">↶</button></div></section>
+</div>
+<div class="progress-wrap"><div class="progress-meta"><span>कुल वोट: <b id="total">0</b></span><span id="percent">50% : 50%</span></div><div class="progress"><div class="progress-blue" id="bar1"></div><div class="progress-red" id="bar2"></div></div></div>
+</main>
+<aside class="panel">
+<h2>⚙️ कस्टमाइज़ करें</h2>
+<div class="field"><label for="questionInput">वोटिंग का सवाल</label><textarea id="questionInput" maxlength="180">किस खिलाड़ी को सपोर्ट करते हो?</textarea></div>
+<div class="two">
+<div class="field"><label for="nameInput1">खिलाड़ी 1 का नाम</label><input id="nameInput1" maxlength="50" value="PLAYER 1"></div>
+<div class="field"><label for="nameInput2">खिलाड़ी 2 का नाम</label><input id="nameInput2" maxlength="50" value="PLAYER 2"></div>
+</div>
+<div class="two">
+<div class="field"><label for="scoreInput1">खिलाड़ी 1 का स्कोर</label><input id="scoreInput1" type="number" min="0" max="999999999" value="0"></div>
+<div class="field"><label for="scoreInput2">खिलाड़ी 2 का स्कोर</label><input id="scoreInput2" type="number" min="0" max="999999999" value="0"></div>
+</div>
+<div class="field"><label>खिलाड़ी 1 की फोटो</label><div class="photo-actions"><button class="light small" id="photoBtn1">📷 फोटो चुनें</button><button class="light small" id="clearPhoto1">हटाएँ</button><input class="hidden" type="file" accept="image/*" id="photoInput1"></div></div>
+<div class="field"><label>खिलाड़ी 2 की फोटो</label><div class="photo-actions"><button class="light small" id="photoBtn2">📷 फोटो चुनें</button><button class="light small" id="clearPhoto2">हटाएँ</button><input class="hidden" type="file" accept="image/*" id="photoInput2"></div></div>
+<div class="color-row">
+<div class="field"><label for="colorInput1">खिलाड़ी 1 का रंग</label><input id="colorInput1" type="color" value="#168ff0"></div>
+<div class="field"><label for="colorInput2">खिलाड़ी 2 का रंग</label><input id="colorInput2" type="color" value="#f44336"></div>
+</div>
+<div class="two">
+<div class="field"><label for="emojiInput1">फोटो न हो तो इमोजी</label><input id="emojiInput1" maxlength="6" value="🐸"></div>
+<div class="field"><label for="emojiInput2">फोटो न हो तो इमोजी</label><input id="emojiInput2" maxlength="6" value="🐮"></div>
+</div>
+<div class="top-actions"><button class="primary" id="saveBtn">💾 वोटिंग सेव</button><button class="light" id="resetBtn">↻ स्कोर रीसेट</button><button class="danger" id="undoAllBtn">↶ आखिरी बदलाव Undo</button></div>
+<div class="section">
+<h2>📁 सेव की गई वोटिंग</h2><div class="saved-list" id="savedList"></div>
+<p class="notice">डेटा इसी ब्राउज़र/डिवाइस में सेव होता है। ब्राउज़र का डेटा मिटाने पर सेव की गई वोटिंग भी मिट सकती है। फोटो और प्रोजेक्ट सेव करने के लिए डिवाइस में जगह चाहिए।</p>
+</div>
+<div class="section top-actions"><button class="primary" id="exportBtn">⬇ इमेज डाउनलोड</button><button class="light" id="importBtn">📂 बैकअप खोलें</button><button class="light" id="backupBtn">⬆ बैकअप डाउनलोड</button><input class="hidden" id="backupInput" type="file" accept="application/json"></div>
+<p class="notice">इमेज डाउनलोड में पूरा स्कोरबोर्ड शामिल होगा। फुल स्क्रीन मोड में टूलबार छिप जाएगा; बाहर आने के लिए Esc या वापस बटन इस्तेमाल करें।</p>
+</aside>
+</div>
+</div>
+<div class="toast hidden" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);
+const defaults=()=>({id:null,question:"किस खिलाड़ी को सपोर्ट करते हो?",names:["PLAYER 1","PLAYER 2"],scores:[0,0],colors:["#168ff0","#f44336"],emojis:["🐸","🐮"],photos:[null,null],history:[],updated:Date.now()});
+let state=defaults(), saved=[], toastTimer;
+const STORE="personal-scoreboard-v1";
+function say(msg){const t=$("toast");t.textContent=msg;t.classList.remove("hidden");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.add("hidden"),2300)}
+function safeNum(n){n=Number(n);return Number.isFinite(n)?Math.max(0,Math.min(999999999,Math.floor(n))):0}
+function pushHistory(){state.history.push([...state.scores]);if(state.history.length>100)state.history.shift()}
+function render(){
+ $("questionView").textContent=state.question||"अपना सवाल लिखें";$("questionInput").value=state.question;
+ for(let i=0;i<2;i++){
+  $("nameView"+(i+1)).textContent=state.names[i]||("PLAYER "+(i+1));$("score"+(i+1)).textContent=state.scores[i].toLocaleString("en-IN");
+  $("nameInput"+(i+1)).value=state.names[i];$("scoreInput"+(i+1)).value=state.scores[i];$("colorInput"+(i+1)).value=state.colors[i];$("emojiInput"+(i+1)).value=state.emojis[i];
+  $("side"+(i+1)).style.background=state.colors[i];
+  const av=$("avatar"+(i+1));av.innerHTML="";if(state.photos[i]){const im=document.createElement("img");im.src=state.photos[i];im.alt=state.names[i];av.appendChild(im)}else av.textContent=state.emojis[i]||"👤";
+ }
+ const total=state.scores[0]+state.scores[1], p=total?state.scores[0]/total*100:50;
+ $("total").textContent=total.toLocaleString("en-IN");$("percent").textContent=Math.round(p)+"% : "+Math.round(100-p)+"%";$("bar1").style.width=p+"%";
+ renderSaved();
+}
+function persist(){try{localStorage.setItem(STORE,JSON.stringify({state,saved}))}catch(e){say("स्टोरेज भर गया हो सकता है। छोटी फोटो चुनें या पुराने प्रोजेक्ट हटाएँ।")}}
+function loadPersist(){try{const x=JSON.parse(localStorage.getItem(STORE)||"{}");if(x.state)state={...defaults(),...x.state};if(Array.isArray(x.saved))saved=x.saved}catch(e){}}
+function setScore(i,n){pushHistory();state.scores[i]=safeNum(n);state.updated=Date.now();render();persist()}
+function undo(i=null){if(!state.history.length){say("Undo करने के लिए बदलाव नहीं है");return}const old=state.history.pop();state.scores=old;render();persist()}
+function fresh(){if(!confirm("नई वोटिंग शुरू करें? पहले सेव न किया हो तो मौजूदा सेटअप खो जाएगा।"))return;state=defaults();fillInputs();render();persist()}
+function fillInputs(){ $("questionInput").value=state.question; }
+function saveProject(){const p=JSON.parse(JSON.stringify(state));if(!p.id)p.id=(crypto.randomUUID?crypto.randomUUID():String(Date.now()));p.updated=Date.now();state.id=p.id;const idx=saved.findIndex(x=>x.id===p.id);if(idx>=0)saved[idx]=p;else saved.unshift(p);persist();renderSaved();say("वोटिंग सेव हो गई")}
+function renderSaved(){const el=$("savedList");if(!el)return;el.innerHTML="";if(!saved.length){el.innerHTML='<div class="notice">अभी कोई वोटिंग सेव नहीं है।</div>';return}saved.forEach(p=>{const row=document.createElement("div");row.className="saved-item";const info=document.createElement("div");const title=document.createElement("strong");title.textContent=p.question||"बिना नाम की वोटिंग";const sub=document.createElement("small");sub.textContent=(p.names||["Player 1","Player 2"]).join(" vs ")+" · "+new Date(p.updated||Date.now()).toLocaleDateString();info.append(title,sub);const actions=document.createElement("div");actions.className="saved-actions";const open=document.createElement("button");open.className="light";open.textContent="खोलें";open.onclick=()=>{state=JSON.parse(JSON.stringify(p));render();persist();say("वोटिंग खुल गई")};const del=document.createElement("button");del.className="danger";del.textContent="✕";del.title="हटाएँ";del.onclick=()=>{if(confirm("इस सेव की गई वोटिंग को हटाएँ?")){saved=saved.filter(x=>x.id!==p.id);persist();renderSaved()}};actions.append(open,del);row.append(info,actions);el.append(row)})}
+$("questionInput").addEventListener("input",e=>{state.question=e.target.value;$("questionView").textContent=state.question||"अपना सवाल लिखें";persist()});
+for(let i=0;i<2;i++){
+ const k=i+1;
+ $("nameInput"+k).addEventListener("input",e=>{state.names[i]=e.target.value;$("nameView"+k).textContent=e.target.value||"PLAYER "+k;persist()});
+ $("scoreInput"+k).addEventListener("change",e=>setScore(i,safeNum(e.target.value)));
+ $("colorInput"+k).addEventListener("input",e=>{state.colors[i]=e.target.value;$("side"+k).style.background=e.target.value;persist()});
+ $("emojiInput"+k).addEventListener("input",e=>{state.emojis[i]=e.target.value;if(!state.photos[i])$("avatar"+k).textContent=e.target.value;persist()});
+ $("photoBtn"+k).onclick=()=>$("photoInput"+k).click();
+ $("photoInput"+k).addEventListener("change",async e=>{const file=e.target.files[0];if(!file)return;if(file.size>6*1024*1024){say("6 MB से छोटी फोटो चुनें");return}try{state.photos[i]=await resizeImage(file);render();persist();say("फोटो लग गई")}catch(err){say("फोटो पढ़ी नहीं जा सकी")}e.target.value=""});
+ $("clearPhoto"+k).onclick=()=>{state.photos[i]=null;render();persist()};
+}
+function resizeImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onerror=reject;r.onload=()=>{const img=new Image();img.onerror=reject;img.onload=()=>{const c=document.createElement("canvas"),max=600,scale=Math.min(1,max/Math.max(img.width,img.height));c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext("2d").drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL("image/jpeg",.82))};img.src=r.result};r.readAsDataURL(file)})}
+document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{const i=Number(b.dataset.add)-1;setScore(i,state.scores[i]+Number(b.dataset.n))});
+document.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{const i=Number(b.dataset.sub)-1;setScore(i,state.scores[i]-1)});
+document.querySelectorAll("[data-undo]").forEach(b=>b.onclick=()=>undo());
+$("saveBtn").onclick=saveProject;$("newBtn").onclick=fresh;
+$("resetBtn").onclick=()=>{if(confirm("दोनों स्कोर शून्य करें?")){pushHistory();state.scores=[0,0];render();persist();say("स्कोर रीसेट हो गया")}};
+$("undoAllBtn").onclick=()=>undo();
+$("fullBtn").onclick=()=>{document.body.classList.toggle("fullscreen");$("fullBtn").textContent=document.body.classList.contains("fullscreen")?"⤢ एडिटिंग पर लौटें":"⛶ फुल स्क्रीन"};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.body.classList.contains("fullscreen")){document.body.classList.remove("fullscreen");$("fullBtn").textContent="⛶ फुल स्क्रीन"}});
+$("exportBtn").onclick=async()=>{try{const blob=await boardBlob();const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="scoreboard.png";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);say("स्कोरबोर्ड इमेज डाउनलोड हो रही है")}catch(e){say("इमेज नहीं बन सकी; स्क्रीनशॉट ले सकते हैं")}};
+function boardBlob(){return new Promise(async(resolve,reject)=>{try{const c=document.createElement("canvas"),w=1200,h=850;c.width=w;c.height=h;const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,w,h);x.fillStyle="#222";x.textAlign="center";x.font="bold 34px system-ui";wrapText(x,state.question||"Voting",w/2,55,1050,42);const half=w/2;for(let i=0;i<2;i++){x.fillStyle=state.colors[i];x.fillRect(i*half,105,half,600);if(state.photos[i]){const im=await loadImg(state.photos[i]);const cx=i*half+half/2,cy=245,r=85;x.save();x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.clip();x.drawImage(im,cx-r,cy-r,r*2,r*2);x.restore()}else{x.fillStyle="#ffffff";x.beginPath();x.arc(i*half+half/2,245,85,0,Math.PI*2);x.fill();x.fillStyle=state.colors[i];x.font="bold 70px system-ui";x.fillText(state.emojis[i]||"👤",i*half+half/2,270)}x.fillStyle="#fff";x.font="bold 48px system-ui";x.fillText(state.names[i]||("PLAYER "+(i+1)),i*half+half/2,390,half-40);x.font="bold 130px system-ui";x.fillText(state.scores[i].toLocaleString("en-IN"),i*half+half/2,545,half-30);x.font="bold 24px system-ui";x.fillText("VOTES",i*half+half/2,590)}const total=state.scores[0]+state.scores[1];x.fillStyle="#fff";x.fillRect(0,705,w,145);x.fillStyle="#222";x.font="bold 28px system-ui";x.fillText("कुल वोट: "+total.toLocaleString("en-IN"),w/2,755);x.fillStyle="#e5e7eb";x.fillRect(60,785,w-120,20);const p=total?state.scores[0]/total:0.5;x.fillStyle=state.colors[0];x.fillRect(60,785,(w-120)*p,20);x.fillStyle=state.colors[1];x.fillRect(60+(w-120)*p,785,(w-120)*(1-p),20);c.toBlob(b=>b?resolve(b):reject(new Error("no blob")),"image/png")}catch(e){reject(e)}})}
+function wrapText(ctx,text,x,y,maxWidth,lineHeight){const words=String(text).split(/\s+/);let line="",lines=[];for(const word of words){const test=line?line+" "+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);lines.slice(0,2).forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight,maxWidth))}
+function loadImg(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=src})}
+$("backupBtn").onclick=()=>{const data=JSON.stringify({state,saved},null,2);downloadText(data,"scoreboard-backup.json","application/json")};
+function downloadText(text,filename,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+$("importBtn").onclick=()=>$("backupInput").click();
+$("backupInput").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!x.state)throw Error("bad");state={...defaults(),...x.state};saved=Array.isArray(x.saved)?x.saved:[];render();persist();say("बैकअप खुल गया")}catch(err){say("यह बैकअप फ़ाइल सही नहीं है")}e.target.value=""};
+loadPersist();render();persist();
+if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body></html>
